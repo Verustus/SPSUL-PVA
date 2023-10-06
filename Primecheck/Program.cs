@@ -15,7 +15,8 @@ namespace Primecheck {
                 if (Int64.TryParse(read, out Int64 num)) {
                     if (isPrime(num)) Console.WriteLine("Your number is prime!");
                     else Console.WriteLine("Your number isn't prime!");
-                } else {
+                }
+                else {
                     Console.WriteLine("That is not a number or not a decimal number!");
                 }
             }
