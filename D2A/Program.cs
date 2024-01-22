@@ -35,9 +35,7 @@ namespace D2A {
             }
             string strInt = "";
             if (system == 1) {
-                for (int i = 0; i < DEC; i++) {
-                    strInt += "1";
-                }
+                for (int i = 0; i < DEC; i++) { strInt += "|"; }
                 return strInt;
             }
             char[] alphabet = "abcdefghijklmnopqrstuvwxyz".ToUpper().ToCharArray();
