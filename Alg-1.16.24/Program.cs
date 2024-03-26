@@ -15,6 +15,9 @@ namespace Alg_1._16._24 {
             //String fileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss");
             //Console.WriteLine(fileName);
             //startLoggingToFile(fileName);
+            byte[] inputBuffer = new byte[1024];
+            Stream inputStream = Console.OpenStandardInput(inputBuffer.Length);
+            Console.SetIn(new StreamReader(inputStream, Console.InputEncoding, false, inputBuffer.Length));
             String read = "";
             int vel = -1;
             String condition = null;
@@ -124,4 +127,5 @@ for (int i = 0; i < vel; i++)
         }
     }
 }
-*/
+
+//(i>=vel/3&&i<vel-vel/3&&j>=vel/3&&j<vel-vel/3)&&(i+vel/6==j||i-vel/6==j||i+vel/6==vel-j-1||i-vel/6==vel-j-1)||!(i>=vel/3&&i<vel-vel/3&&j>=vel/3&&j<vel-vel/3)&&(i==vel/2||j==vel/2)
