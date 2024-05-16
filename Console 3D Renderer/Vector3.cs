@@ -3,7 +3,7 @@
         public float x;
         public float y;
         public float z;
-        public static Vector3 zero = new Vector3(0, 0, 0);
+        public static Vector3 Zero = new Vector3(0, 0, 0);
 
         public Vector3(float x, float y, float z) {
             this.x = x;

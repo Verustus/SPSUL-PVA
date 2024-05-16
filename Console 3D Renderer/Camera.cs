@@ -21,7 +21,6 @@ namespace Console_3D_Renderer {
                 point.z - position.z
             );
 
-            //matrix pain - chatgpt
             float x = relativePoint.x * (1 - 2 * (rotation.Y * rotation.Y + rotation.Z * rotation.Z))
                         + relativePoint.y * 2 * (rotation.X * rotation.Y - rotation.W * rotation.Z)
                         + relativePoint.z * 2 * (rotation.X * rotation.Z + rotation.W * rotation.Y);
@@ -33,17 +32,48 @@ namespace Console_3D_Renderer {
                         + relativePoint.z * (1 - 2 * (rotation.X * rotation.X + rotation.Y * rotation.Y));
 
             float zDepth = z;
-            Vector2 projectedPoint = new Vector2(x / zDepth, y / zDepth);
+            Vector2 projectedPoint = new Vector2(y / zDepth, x / zDepth);
 
             float fovRadians = fov * (float) (Math.PI / 180);
-            float aspect = aspectRatio;
-            float scaleY = (float)Math.Tan(fovRadians * 0.5f);
-            float scaleX = scaleY * aspect;
+            float scaleY = (float) Math.Tan(fovRadians * 0.5f);
+            float scaleX = scaleY * aspectRatio;
 
-            projectedPoint.x /= scaleX;
-            projectedPoint.y /= scaleY;
+            projectedPoint.x /= scaleY;
+            projectedPoint.y /= scaleX;
+            projectedPoint.x = -projectedPoint.x;
 
             return projectedPoint;
+        }
+
+        public void DrawLineToFrame(ref ConsoleColor[,] frame, float sizeX, float sizeY, Vector2 from, Vector2 to, ConsoleColor color = ConsoleColor.White) {
+            int x0 = (int) ((from.x+sizeX)/sizeX/2*frame.GetLength(0));
+            int y0 = (int) ((from.y+sizeY)/sizeY/2*frame.GetLength(1));
+            int x1 = (int) ((to.x+sizeX)/sizeX/2*frame.GetLength(0));
+            int y1 = (int) ((to.y+sizeY)/sizeY/2*frame.GetLength(1));
+
+            int dx = Math.Abs(x1 - x0);
+            int dy = Math.Abs(y1 - y0);
+
+            int sx = x0 < x1 ? 1 : -1;
+            int sy = y0 < y1 ? 1 : -1;
+
+            int err = dx - dy;
+            int x = x0, y = y0;
+
+            while (x != x1 || y != y1) {
+                if (x >= 0 && y >= 0 && x < frame.GetLength(0) && y < frame.GetLength(1))
+                    frame[x, y] = color;
+
+                int e2 = 2 * err;
+                if (e2 > -dy) {
+                    err -= dy;
+                    x += sx;
+                }
+                if (e2 < dx) {
+                    err += dx;
+                    y += sy;
+                }
+            }
         }
     }
 }
