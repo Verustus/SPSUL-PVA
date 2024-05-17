@@ -2,67 +2,81 @@
 
 namespace Console_3D_Renderer {
     internal class Program {
-        public static void Main(String[] args) {
-            Vector3 pointA1 = new Vector3(-2.5f, -2.5f, -2.5f);
+        private static float dir = 0.2f;
+
+        public static void Main() {
+            /*Vector3 pointA1 = new Vector3(-2.5f, -2.5f, -2.5f);
             Vector3 pointB1 = new Vector3(-2.5f, -2.5f,  2.5f);
             Vector3 pointC1 = new Vector3( 2.5f, -2.5f,  2.5f);
             Vector3 pointD1 = new Vector3( 2.5f, -2.5f, -2.5f);
             Vector3 pointA2 = new Vector3(-2.5f,  2.5f, -2.5f);
             Vector3 pointB2 = new Vector3(-2.5f,  2.5f,  2.5f);
             Vector3 pointC2 = new Vector3( 2.5f,  2.5f,  2.5f);
-            Vector3 pointD2 = new Vector3( 2.5f,  2.5f, -2.5f);
+            Vector3 pointD2 = new Vector3( 2.5f,  2.5f, -2.5f);*/
+            
+            Vector3 pointA = new Vector3(-2.5f, -2.5f, -2.5f);
+            Vector3 pointB = new Vector3(-2.5f, -2.5f,  2.5f);
+            Vector3 pointC = new Vector3( 2.5f, -2.5f,  2.5f);
+            Vector3 pointD = new Vector3( 2.5f, -2.5f, -2.5f);
+            Vector3 pointE = new Vector3(   0f,  2.5f,    0f);
 
-            Camera camera = new Camera(8f, 16f/9f, new Vector3(0, 0, -12), Quaternion.CreateFromYawPitchRoll(0, 0, 0));
+            Camera camera = new Camera(5f, 16f/9f, new Vector3(0, 5, -15), Quaternion.CreateFromYawPitchRoll(0, -0.25f, 0), new Vector2(5, 5));
 
             ConsoleDisplay display = new ConsoleDisplay();
             while (true) {
-                ConsoleColor[,] frame = new ConsoleColor[Console.WindowHeight, Console.WindowWidth/2];
+                Frame frame = new Frame(Console.WindowHeight, Console.WindowWidth/2);
                 
-                camera.aspectRatio = frame.GetLength(1)/frame.GetLength(0);
+                camera.aspectRatio = (float) frame.width/(float) frame.height;
+
+                /*camera.DrawLineToFrame(ref frame, pointA1, pointA2, ConsoleColor.Green);
+                camera.DrawLineToFrame(ref frame, pointB1, pointB2, ConsoleColor.Green);
+                camera.DrawLineToFrame(ref frame, pointC1, pointC2, ConsoleColor.Green);
+                camera.DrawLineToFrame(ref frame, pointD1, pointD2, ConsoleColor.Green);
+
+                camera.DrawLineToFrame(ref frame, pointA1, pointB1, ConsoleColor.Red);
+                camera.DrawLineToFrame(ref frame, pointB1, pointC1, ConsoleColor.Red);
+                camera.DrawLineToFrame(ref frame, pointC1, pointD1, ConsoleColor.Red);
+                camera.DrawLineToFrame(ref frame, pointD1, pointA1, ConsoleColor.Red);
+
+                camera.DrawLineToFrame(ref frame, pointA2, pointB2, ConsoleColor.Blue);
+                camera.DrawLineToFrame(ref frame, pointB2, pointC2, ConsoleColor.Blue);
+                camera.DrawLineToFrame(ref frame, pointC2, pointD2, ConsoleColor.Blue);
+                camera.DrawLineToFrame(ref frame, pointD2, pointA2, ConsoleColor.Blue);*/
+
+                camera.DrawLineToFrame(ref frame, pointA, pointB, ConsoleColor.Red);
+                camera.DrawLineToFrame(ref frame, pointB, pointC, ConsoleColor.Red);
+                camera.DrawLineToFrame(ref frame, pointC, pointD, ConsoleColor.Red);
+                camera.DrawLineToFrame(ref frame, pointD, pointA, ConsoleColor.Red);
                 
-                Vector2 projectedPointA1 = camera.PerspectiveProjection(pointA1);
-                Vector2 projectedPointB1 = camera.PerspectiveProjection(pointB1);
-                Vector2 projectedPointC1 = camera.PerspectiveProjection(pointC1);
-                Vector2 projectedPointD1 = camera.PerspectiveProjection(pointD1);
-                Vector2 projectedPointA2 = camera.PerspectiveProjection(pointA2);
-                Vector2 projectedPointB2 = camera.PerspectiveProjection(pointB2);
-                Vector2 projectedPointC2 = camera.PerspectiveProjection(pointC2);
-                Vector2 projectedPointD2 = camera.PerspectiveProjection(pointD2);
+                camera.DrawLineToFrame(ref frame, pointA, pointE, ConsoleColor.Green);
+                camera.DrawLineToFrame(ref frame, pointB, pointE, ConsoleColor.Green);
+                camera.DrawLineToFrame(ref frame, pointC, pointE, ConsoleColor.Green);
+                camera.DrawLineToFrame(ref frame, pointD, pointE, ConsoleColor.Green);
 
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointA1, projectedPointB1, ConsoleColor.Blue);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointB1, projectedPointC1, ConsoleColor.Blue);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointC1, projectedPointD1, ConsoleColor.Blue);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointD1, projectedPointA1, ConsoleColor.Blue);
+                display.Render(frame);
 
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointA2, projectedPointB2, ConsoleColor.Red);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointB2, projectedPointC2, ConsoleColor.Red);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointC2, projectedPointD2, ConsoleColor.Red);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointD2, projectedPointA2, ConsoleColor.Red);
-
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointA1, projectedPointA2, ConsoleColor.Green);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointB1, projectedPointB2, ConsoleColor.Green);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointC1, projectedPointC2, ConsoleColor.Green);
-                camera.DrawLineToFrame(ref frame, 5, 10, projectedPointD1, projectedPointD2, ConsoleColor.Green);
-                for (int i = 0; i < frame.GetLength(0); i++) {
-                    for (int j = 0; j < frame.GetLength(1); j++)
-                        display.SetPixel(i, j, frame[i, j]);
-                }
-
-                pointA1.RotateAroundY(4.5f, Vector3.Zero);
+                /*pointA1.RotateAroundY(4.5f, Vector3.Zero);
                 pointB1.RotateAroundY(4.5f, Vector3.Zero);
                 pointC1.RotateAroundY(4.5f, Vector3.Zero);
                 pointD1.RotateAroundY(4.5f, Vector3.Zero);
                 pointA2.RotateAroundY(4.5f, Vector3.Zero);
                 pointB2.RotateAroundY(4.5f, Vector3.Zero);
                 pointC2.RotateAroundY(4.5f, Vector3.Zero);
-                pointD2.RotateAroundY(4.5f, Vector3.Zero);
+                pointD2.RotateAroundY(4.5f, Vector3.Zero);*/
 
-                display.Render();
-                //Console.WriteLine(pointA2);
-                Thread.Sleep(10);
+                pointA.RotateAroundY(4.5f, Vector3.Zero);
+                pointB.RotateAroundY(4.5f, Vector3.Zero);
+                pointC.RotateAroundY(4.5f, Vector3.Zero);
+                pointD.RotateAroundY(4.5f, Vector3.Zero);
+                pointE.RotateAroundY(4.5f, Vector3.Zero);
+
+                if (camera.position.z+15 <= -10 || camera.position.z+15 > 0)
+                    dir = -dir;
+
+                camera.position.z += dir;
+
+                Thread.Sleep(100);
             }
-            //Screen screen = new Screen();
-            //screen.StartLoop(frame);
         }
     }
 }

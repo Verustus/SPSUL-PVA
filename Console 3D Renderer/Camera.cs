@@ -6,15 +6,17 @@ namespace Console_3D_Renderer {
         public float aspectRatio;
         public Vector3 position;
         public Quaternion rotation;
+        public Vector2 screenScale;
 
-        public Camera(float fov, float aspectRatio, Vector3 position, Quaternion rotation) {
+        public Camera(float fov, float aspectRatio, Vector3 position, Quaternion rotation, Vector2 screenScale) {
             this.fov = fov;
             this.aspectRatio = aspectRatio;
             this.position = position;
             this.rotation = rotation;
+            this.screenScale = screenScale;
         }
 
-        public Vector2 PerspectiveProjection(Vector3 point) {
+        public (Vector2, float) PerspectiveProjection(Vector3 point) {
             Vector3 relativePoint = new Vector3(
                 point.x - position.x,
                 point.y - position.y,
@@ -31,8 +33,7 @@ namespace Console_3D_Renderer {
                         + relativePoint.y * 2 * (rotation.Y * rotation.Z + rotation.W * rotation.X)
                         + relativePoint.z * (1 - 2 * (rotation.X * rotation.X + rotation.Y * rotation.Y));
 
-            float zDepth = z;
-            Vector2 projectedPoint = new Vector2(y / zDepth, x / zDepth);
+            Vector2 projectedPoint = new Vector2(y/z, x/z);
 
             float fovRadians = fov * (float) (Math.PI / 180);
             float scaleY = (float) Math.Tan(fovRadians * 0.5f);
@@ -42,38 +43,40 @@ namespace Console_3D_Renderer {
             projectedPoint.y /= scaleX;
             projectedPoint.x = -projectedPoint.x;
 
-            return projectedPoint;
+            return (projectedPoint, z);
+        }
+        public void DrawLineToFrame(ref Frame frame, (Vector2, float) from, (Vector2, float) to, ConsoleColor color = ConsoleColor.White) {
+            float x0 = (int) ((from.Item1.x+screenScale.x)/screenScale.x/2*frame.height);
+            float y0 = (int) ((from.Item1.y+screenScale.y)/screenScale.y/2*frame.width);
+            float x1 = (int) ((to.Item1.x+screenScale.x)/screenScale.x/2*frame.height);
+            float y1 = (int) ((to.Item1.y+screenScale.y)/screenScale.y/2*frame.width);
+            float z0 = (int) from.Item2;
+            float z1 = (int) to.Item2;
+
+            int maxRes = frame.width > frame.height ? frame.width : frame.height;
+
+            float moveX = (x1-x0)/maxRes;
+            float moveY = (y1-y0)/maxRes;
+            float moveZ = (z1-z0)/maxRes;
+
+            float x = x0;
+            float y = y0;
+            float zDepth = z0;
+
+            for (int i = 0; i < maxRes; i++) {
+                if (x >= 0 && x <= frame.height-1 && y >= 0 && y <= frame.width-1) { frame.Set((int) x, (int) y, color, zDepth); }
+                
+                x += moveX;
+                y += moveY;
+                zDepth += moveZ;
+            }
         }
 
-        public void DrawLineToFrame(ref ConsoleColor[,] frame, float sizeX, float sizeY, Vector2 from, Vector2 to, ConsoleColor color = ConsoleColor.White) {
-            int x0 = (int) ((from.x+sizeX)/sizeX/2*frame.GetLength(0));
-            int y0 = (int) ((from.y+sizeY)/sizeY/2*frame.GetLength(1));
-            int x1 = (int) ((to.x+sizeX)/sizeX/2*frame.GetLength(0));
-            int y1 = (int) ((to.y+sizeY)/sizeY/2*frame.GetLength(1));
+        public void DrawLineToFrame(ref Frame frame, Vector3 from, Vector3 to, ConsoleColor color = ConsoleColor.White) {
+            (Vector2, float) fromProjection = PerspectiveProjection(from);
+            (Vector2, float) toProjection = PerspectiveProjection(to);
 
-            int dx = Math.Abs(x1 - x0);
-            int dy = Math.Abs(y1 - y0);
-
-            int sx = x0 < x1 ? 1 : -1;
-            int sy = y0 < y1 ? 1 : -1;
-
-            int err = dx - dy;
-            int x = x0, y = y0;
-
-            while (x != x1 || y != y1) {
-                if (x >= 0 && y >= 0 && x < frame.GetLength(0) && y < frame.GetLength(1))
-                    frame[x, y] = color;
-
-                int e2 = 2 * err;
-                if (e2 > -dy) {
-                    err -= dy;
-                    x += sx;
-                }
-                if (e2 < dx) {
-                    err += dx;
-                    y += sy;
-                }
-            }
+            DrawLineToFrame(ref frame, fromProjection, toProjection, color);
         }
     }
 }

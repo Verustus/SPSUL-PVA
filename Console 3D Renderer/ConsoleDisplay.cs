@@ -16,6 +16,13 @@
 
             pixels[writeX, writeY] = color;
         }
+        public void Render(Frame frame) {
+            for (int i = 0; i < frame.height; i++) {
+                for (int j = 0; j < frame.width; j++)
+                    SetPixel(i, j, frame.Get(i, j));
+            }
+            Render();
+        }
 
         public void Render() {
         ConsoleColor[,] pixels = this.pixels;
@@ -49,8 +56,6 @@
             if (rerender) this.Render();
 
             this.pixels = new ConsoleColor[Console.WindowHeight, Console.WindowWidth / 2];
-
-            //Program.PrintOut2DArray(pixels);
         }
     }
 }
