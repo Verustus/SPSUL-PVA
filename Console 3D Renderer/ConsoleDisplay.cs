@@ -1,11 +1,13 @@
 ﻿namespace Console_3D_Renderer {
     internal class ConsoleDisplay {
+        ConsoleColor[,] lastRenderPixels;
         ConsoleColor[,] pixels;
         int lastConsoleHeight;
         int lastConsoleWidth;
 
         public ConsoleDisplay() {
             pixels = new ConsoleColor[Console.WindowHeight, Console.WindowWidth/2];
+            lastRenderPixels = pixels;
             lastConsoleHeight = Console.WindowHeight;
             lastConsoleWidth = Console.WindowWidth;
         }
@@ -25,7 +27,7 @@
         }
 
         public void Render() {
-        ConsoleColor[,] pixels = this.pixels;
+            ConsoleColor[,] pixels = this.pixels;
 
             if (lastConsoleHeight != Console.WindowHeight || lastConsoleWidth != Console.WindowWidth) {
                 Console.Clear();
@@ -39,22 +41,32 @@
 
             bool rerender = false;
             for (int i = 0; i < renderY; i++) {
-
                 for (int j = 0; j < renderX; j++) {
-                    Console.ForegroundColor = pixels[i, j];
-                    if (i >= Console.WindowHeight || j >= Console.WindowWidth) {
-                        rerender = true;
-                        break;
-                    } else {
-                        Console.SetCursorPosition(j*2, i);
-                        Console.Write("██");
-                        Console.ResetColor();
-                    }
+                    try {
+                        if (lastRenderPixels[i, j] != pixels[i, j]) {
+                            try {
+                                Console.BackgroundColor = pixels[i, j];
+                                Console.SetCursorPosition(j * 2, i);
+                            } catch {
+                                rerender = true;
+                                Console.ResetColor();
+                                break;
+                            }
+
+                            byte[] buffer = Enumerable.Repeat((byte)' ', 2).ToArray();
+                            using (Stream stdout = Console.OpenStandardOutput(Console.WindowHeight*Console.WindowWidth)) {
+                                stdout.Write(buffer, 0, buffer.Length);
+                            }
+                            
+                            Console.ResetColor();
+                        }
+                    } catch {}
                 }
                 if (rerender) break;
             }
-            if (rerender) this.Render();
-
+            if (rerender) Render();
+            
+            lastRenderPixels = pixels;
             this.pixels = new ConsoleColor[Console.WindowHeight, Console.WindowWidth / 2];
         }
     }
