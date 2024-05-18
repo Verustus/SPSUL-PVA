@@ -18,15 +18,15 @@
 
             pixels[writeX, writeY] = color;
         }
-        public void Render(Frame frame) {
+        public void Draw(Frame frame) {
             for (int i = 0; i < frame.height; i++) {
                 for (int j = 0; j < frame.width; j++)
                     SetPixel(i, j, frame.Get(i, j));
             }
-            Render();
+            Draw();
         }
 
-        public void Render() {
+        public void Draw() {
             ConsoleColor[,] pixels = this.pixels;
 
             if (lastConsoleHeight != Console.WindowHeight || lastConsoleWidth != Console.WindowWidth) {
@@ -59,12 +59,13 @@
                             }
                             
                             Console.ResetColor();
+                            Console.SetCursorPosition(0, 0);
                         }
                     } catch {}
                 }
                 if (rerender) break;
             }
-            if (rerender) Render();
+            if (rerender) Draw();
             
             lastRenderPixels = pixels;
             this.pixels = new ConsoleColor[Console.WindowHeight, Console.WindowWidth / 2];

@@ -1,4 +1,6 @@
-﻿namespace Console_3D_Renderer {
+﻿using System;
+
+namespace Console_3D_Renderer {
     internal class Vector3 {
         public float x;
         public float y;
@@ -16,50 +18,84 @@
             y = v.y;
             z = v.z;
         }
-        // cele vykraftil sam rotace jednoduche
+
+        public Vector3 Add(Vector3 add) {
+            x += add.x;
+            y += add.y;
+            z += add.z;
+
+            return this;
+        }
+
+        public Vector3 Subtract(Vector3 subtract) {
+            x -= subtract.x;
+            y -= subtract.y;
+            z -= subtract.z;
+
+            return this;
+        }
+        public void Rotate(Vector3 rotation) {
+            RotateX(rotation.x);
+            RotateY(rotation.y);
+            RotateZ(rotation.z);
+        }
+        public void RotateAround(Vector3 rotation, Vector3 point) {
+            RotateAroundX(rotation.x, point);
+            RotateAroundY(rotation.y, point);
+            RotateAroundZ(rotation.z, point);
+        }
+        
+        public void RotateX(float angle) {
+            float angleInRadians = angle * (float) (Math.PI / 180);
+            float cosAngle = (float)Math.Cos(angleInRadians);
+            float sinAngle = (float)Math.Sin(angleInRadians);
+
+            y = y * cosAngle - z * sinAngle;
+            z = y * sinAngle + z * cosAngle;
+        }
+        public void RotateY(float angle) {
+            float angleInRadians = angle * (float) (Math.PI / 180);
+            float cosAngle = (float)Math.Cos(angleInRadians);
+            float sinAngle = (float)Math.Sin(angleInRadians);
+            
+            x = x * cosAngle + z * sinAngle;
+            z = -x * sinAngle + z * cosAngle;
+        }
+        public void RotateZ(float angle) {
+            float angleInRadians = angle * (float) (Math.PI / 180);
+            float cosAngle = (float)Math.Cos(angleInRadians);
+            float sinAngle = (float)Math.Sin(angleInRadians);
+            
+            x = x * cosAngle - y * sinAngle;
+            y = x * sinAngle + y * cosAngle;
+        }
+
         public void RotateAroundX(float angle, Vector3 point) {
-            float angleInRadians = angle * (float) (Math.PI / 180);
-            float cosAngle = (float)Math.Cos(angleInRadians);
-            float sinAngle = (float)Math.Sin(angleInRadians);
-
             y -= point.y;
             z -= point.z;
 
-            float newY = y * cosAngle - z * sinAngle;
-            float newZ = y * sinAngle + z * cosAngle;
+            RotateX(angle);
 
-            y = newY + point.y;
-            z = newZ + point.z;
+            y += point.y;
+            z += point.z;
         }
-
         public void RotateAroundY(float angle, Vector3 point) {
-            float angleInRadians = angle * (float) (Math.PI / 180);
-            float cosAngle = (float)Math.Cos(angleInRadians);
-            float sinAngle = (float)Math.Sin(angleInRadians);
-
             x -= point.x;
             z -= point.z;
 
-            float newX = x * cosAngle + z * sinAngle;
-            float newZ = -x * sinAngle + z * cosAngle;
+            RotateY(angle);
 
-            x = newX + point.x;
-            z= newZ + point.z;
+            x += point.x;
+            z += point.z;
         }
-
         public void RotateAroundZ(float angle, Vector3 point) {
-            float angleInRadians = angle * (float) (Math.PI / 180);
-            float cosAngle = (float)Math.Cos(angleInRadians);
-            float sinAngle = (float)Math.Sin(angleInRadians);
-
             x -= point.x;
             y -= point.y;
 
-            float newX = x * cosAngle - y * sinAngle;
-            float newY = x * sinAngle + y * cosAngle;
+            RotateZ(angle);
 
-            x = newX + point.x;
-            y = newY + point.y;
+            x += point.x;
+            y += point.y;
         }
 
         public override string ToString() { return $"({x}, {y}, {z})"; }
