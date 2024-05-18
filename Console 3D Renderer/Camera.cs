@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 
 namespace Console_3D_Renderer {
     internal class Camera {
@@ -45,7 +46,7 @@ namespace Console_3D_Renderer {
 
             return (projectedPoint, z);
         }
-        public void DrawLineToFrame(ref Frame frame, (Vector2, float) from, (Vector2, float) to, ConsoleColor color = ConsoleColor.White) {
+        public void DrawLineToFrame(ref Frame frame, (Vector2, float) from, (Vector2, float) to, Color color) {
             float x0 = (int) ((from.Item1.x+screenScale.x)/screenScale.x/2 * frame.height);
             float y0 = (int) ((from.Item1.y+screenScale.y)/screenScale.y/2 * frame.width);
             float x1 = (int) ((to.Item1.x+screenScale.x)/screenScale.x/2 * frame.height);
@@ -73,14 +74,14 @@ namespace Console_3D_Renderer {
             }
         }
 
-        public void DrawLineToFrame(ref Frame frame, Vector3 from, Vector3 to, ConsoleColor color = ConsoleColor.White) {
+        public void DrawLineToFrame(ref Frame frame, Vector3 from, Vector3 to, Color color) {
             (Vector2, float) fromProjection = PerspectiveProjection(from);
             (Vector2, float) toProjection = PerspectiveProjection(to);
 
             DrawLineToFrame(ref frame, fromProjection, toProjection, color);
         }
 
-        public void DrawTriangleToFrame(ref Frame frame, Vector3 v0, Vector3 v1, Vector3 v2, ConsoleColor color = ConsoleColor.White) {
+        public void DrawTriangleToFrame(ref Frame frame, Vector3 v0, Vector3 v1, Vector3 v2, Color color) {
             // Project the vertices to 2D
             var (p0, z0) = PerspectiveProjection(v0);
             var (p1, z1) = PerspectiveProjection(v1);

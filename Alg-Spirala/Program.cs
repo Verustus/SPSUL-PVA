@@ -1,24 +1,30 @@
 ﻿namespace Alg_Spirala {
     internal class Program {
         public static void Main(string[] args) {
-            Console.Write("Zadej velikost: ");
-            int vel;
-            if (int.TryParse(Console.ReadLine(), out vel)) {
-                NormalSpiral(vel);
-                TurtleSpiral(vel);
-            } else Main(args);
+            while (true) {
+                Console.Write("Zadej velikost: ");
+                int vel;
+                if (int.TryParse(Console.ReadLine(), out vel)) {
+                    if (vel <= 0) continue;
+                    Console.WriteLine("\nSpirála za pomocí if bloků:");
+                    IfSpiral(vel);
+                    Console.WriteLine("\nSpirála za pomocí želví grafiky:");
+                    TurtleSpiral(vel);
+                    Console.WriteLine();
+                }
+            }
         }
 
         private static void Print2DArray(int[,] array) {
 
             for (int i = 0; i < array.GetLength(0); i++) {
                 for (int j = 0; j < array.GetLength(1); j++)
-                    Console.Write(array[i, j] == 1 ? "\u2588\u2588" : "__");
+                    Console.Write(array[i, j] == 1 ? "\u2588\u2588" : "  ");
                 Console.WriteLine();
             }
         }
 
-        private static void NormalSpiral(int vel) {
+        private static void IfSpiral(int vel) {
             int[,] pole = new int[vel, vel];
 
             for (int i = 0; i < vel; i++) {
@@ -27,21 +33,20 @@
                     int distI = sideI ? vel-i-1 : i;
                     bool sideJ = j >= vel/2;
                     int distJ = sideJ ? vel-j-1 : j;
-                    if (i%2 == 1) {
-                        if (distJ <= distI) {
-                            if (sideJ) {
-                                if (distJ%2 == 0) pole[i, j] = 1;
-                            } else {
-                                int dist = sideJ ? vel-j-1 : j+2;
-                                if (dist%2 == 1 && dist <= distI) pole[i, j] = 1;
-                            }
-                        }
-                    } else {
-                        if (i == vel/2+1 && (sideJ ? distJ%2 == 0 : distJ%2 == 1)) pole[i, j] = 1;
+                    if (distI%2 == 0) {
                         if (sideI) {
                             if (j-2 >= vel-i-1 && j < i) pole[i, j] = 1;
                         } else {
                             if (j >= i && j < vel-i-1) pole[i, j] = 1;
+                        }
+                    }
+                    
+                    if (distJ <= distI && (sideJ ? (sideI ? i != j : vel-j-1 != i) : (i > vel/2 ? true : i-1 != j))) {
+                        if (sideJ) {
+                            if (distJ%2 == 0) pole[i, j] = 1;
+                        } else {
+                            int dist = sideJ ? vel-j-1 : j;
+                            if (distJ%2 == 1 && (sideI ? dist <= distI : dist <= distI-1)) pole[i, j] = 1;
                         }
                     }
                 }

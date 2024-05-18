@@ -1,4 +1,6 @@
-﻿namespace Console_3D_Renderer {
+﻿using System.Drawing;
+
+namespace Console_3D_Renderer {
     internal class Model {
         public List<Vector3> vertices { get; private set; } = new List<Vector3>();
         public List<uint> indices { get; private set; } = new List<uint>();
@@ -36,26 +38,33 @@
             this.vertices = vertices;
             this.indices = indices;
         }
-
-        public void Rotate(Vector3 rotation) {
-            foreach (Vector3 v in vertices)
-                v.Rotate(rotation);
-        }
     }
 
     internal class RenderModel {
-        public StaticModel model { get; private set; }
-        public Vector3 position = Vector3.Zero;
-        public ConsoleColor color;
+        private StaticModel model;
+        public Vector3 position;
+        public Vector3 rotation;
+        public Color color;
 
-        public RenderModel(StaticModel model, Vector3 position, ConsoleColor color) {
+        public RenderModel(StaticModel model, Color color, Vector3 position, Vector3 rotation) {
             this.model = model;
             this.position = position;
+            this.rotation = rotation;
             this.color = color;
         }
 
+        public uint GetVertexCount() { return (uint) model.vertices.Length; }
+        public Vector3 GetVertex(uint index) {
+            return new Vector3(model.vertices[index]).Rotate(rotation);
+        }
+        public uint GetIndexCount() { return (uint) model.indices.Length; }
+        public uint GetIndex(uint index) { return model.indices[index]; }
+
         public void Rotate(Vector3 rotation) {
-            model.Rotate(rotation);
+            this.rotation.Add(rotation);
+            this.rotation.x %= 360;
+            this.rotation.y %= 360;
+            this.rotation.z %= 360;
         }
 
         public void RotateAround(Vector3 rotation, Vector3 point) {

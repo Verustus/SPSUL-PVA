@@ -34,15 +34,19 @@ namespace Console_3D_Renderer {
 
             return this;
         }
-        public void Rotate(Vector3 rotation) {
+        public Vector3 Rotate(Vector3 rotation) {
             RotateX(rotation.x);
             RotateY(rotation.y);
             RotateZ(rotation.z);
+
+            return this;
         }
-        public void RotateAround(Vector3 rotation, Vector3 point) {
+        public Vector3 RotateAround(Vector3 rotation, Vector3 point) {
             RotateAroundX(rotation.x, point);
             RotateAroundY(rotation.y, point);
             RotateAroundZ(rotation.z, point);
+
+            return this;
         }
         
         public void RotateX(float angle) {

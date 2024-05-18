@@ -44,10 +44,8 @@ namespace Console_3D_Renderer {
                 Vector3[] triangle = new Vector3[3];
                 int vertexIndex = 0;
 
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (line.Trim().StartsWith("vertex", StringComparison.OrdinalIgnoreCase))
-                    {
+                while ((line = reader.ReadLine()) != null) {
+                    if (line.Trim().StartsWith("vertex", StringComparison.OrdinalIgnoreCase)) {
                         var parts = line.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         float x = float.Parse(parts[1], CultureInfo.InvariantCulture);
                         float y = float.Parse(parts[2], CultureInfo.InvariantCulture);
@@ -55,8 +53,7 @@ namespace Console_3D_Renderer {
 
                         triangle[vertexIndex++] = new Vector3(x, y, z);
 
-                        if (vertexIndex == 3)
-                        {
+                        if (vertexIndex == 3) {
                             model.AddTriangle(triangle[0], triangle[1], triangle[2]);
                             vertexIndex = 0;
                         }

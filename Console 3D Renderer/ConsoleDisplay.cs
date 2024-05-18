@@ -1,18 +1,30 @@
-﻿namespace Console_3D_Renderer {
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
+using PastelExtended;
+
+namespace Console_3D_Renderer {
     internal class ConsoleDisplay {
-        ConsoleColor[,] lastRenderPixels;
-        ConsoleColor[,] pixels;
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr GetStdHandle(int nStdHandle);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool WriteConsole(IntPtr hConsoleOutput, string lpBuffer, uint nNumberOfCharsToWrite, out uint lpNumberOfCharsWritten, IntPtr lpReserved);
+        private const int STD_OUTPUT_HANDLE = -11;
+
+        Color[,] lastRenderPixels;
+        Color[,] pixels;
         int lastConsoleHeight;
         int lastConsoleWidth;
+        IntPtr consoleHandle;
 
         public ConsoleDisplay() {
-            pixels = new ConsoleColor[Console.WindowHeight, Console.WindowWidth/2];
+            pixels = new Color[Console.WindowHeight, Console.WindowWidth/2];
             lastRenderPixels = pixels;
             lastConsoleHeight = Console.WindowHeight;
             lastConsoleWidth = Console.WindowWidth;
+            consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
         }
 
-        public void SetPixel(int x, int y, ConsoleColor color) {
+        public void SetPixel(int x, int y, Color color) {
             int writeX = x%pixels.GetLength(0);
             int writeY = y%pixels.GetLength(1);
 
@@ -27,7 +39,7 @@
         }
 
         public void Draw() {
-            ConsoleColor[,] pixels = this.pixels;
+            Color[,] pixels = this.pixels;
 
             if (lastConsoleHeight != Console.WindowHeight || lastConsoleWidth != Console.WindowWidth) {
                 Console.Clear();
@@ -45,18 +57,18 @@
                     try {
                         if (lastRenderPixels[i, j] != pixels[i, j]) {
                             try {
-                                Console.BackgroundColor = pixels[i, j];
                                 Console.SetCursorPosition(j * 2, i);
+                                string pixel = "  ".Bg(pixels[i, j]);
+                                WriteConsole(consoleHandle, pixel, (uint) pixel.Length, out uint _, IntPtr.Zero);
                             } catch {
                                 rerender = true;
                                 Console.ResetColor();
                                 break;
                             }
-
-                            byte[] buffer = Enumerable.Repeat((byte)' ', 2).ToArray();
+                            /*byte[] buffer = Enumerable.Repeat((byte)' ', 2).ToArray();
                             using (Stream stdout = Console.OpenStandardOutput(Console.WindowHeight*Console.WindowWidth)) {
                                 stdout.Write(buffer, 0, buffer.Length);
-                            }
+                            }*/
                             
                             Console.ResetColor();
                             Console.SetCursorPosition(0, 0);
@@ -68,7 +80,7 @@
             if (rerender) Draw();
             
             lastRenderPixels = pixels;
-            this.pixels = new ConsoleColor[Console.WindowHeight, Console.WindowWidth / 2];
+            this.pixels = new Color[Console.WindowHeight, Console.WindowWidth / 2];
         }
     }
 }
